@@ -77,7 +77,15 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+//Process POST request to register for new account at /signup
+app.post('/signup', (req, res, next) => {
+  return models.Users.create(req.json.username, req.json.password);
+});
 
+//Process POST request to login at /login
+app.post('/login', (req, res, next) => {
+  return models.Users.compare()
+});
 
 
 /************************************************************/
