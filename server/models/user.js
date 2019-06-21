@@ -19,6 +19,13 @@ class Users extends Model {
    * @param {string} salt - The salt generated when the user signed up.
    * @returns {boolean} A boolean indicating if the attempted password was correct.
    */
+  accessUser(username) {
+    //check if user exists in db
+    //if so, ret salt/hashed pw
+    //if not redirect to /signup
+    return super.get.call(this, {'username':username})
+  }
+
   compare(attempted, password, salt) {
     return utils.compareHash(attempted, password, salt);
   }

@@ -92,10 +92,19 @@ app.post('/signup', (req, res, next) => {
 //Process POST request to login at /login
 app.post('/login', (req, res, next) => {
   //route to new models.Users method
-  return models.Users.accessUser(req.json.username)
+  return models.Users.accessUser(req.body.username)
     .then((userData) => {
-      return models.Users.compare(req.json.password, userData.password, userData.salt);
+      return models.Users.compare(req.body.password, userData.password, userData.salt);
     })
+    .then((results) => {
+      res.status(201).send(results);
+      // at this point results should be true/false of compare
+      // depending on true/false we will need to do something later
+    })
+    .catch((err) => {
+      res.status(401).send();
+    });
+
   //Should be given a user, see if they exist, pull their salt and hashed pw
   //then models.Users.compare(attempted, pw, salt)
   //then auth cookies or 401 status
