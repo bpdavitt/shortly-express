@@ -79,12 +79,27 @@ app.post('/links',
 /************************************************************/
 //Process POST request to register for new account at /signup
 app.post('/signup', (req, res, next) => {
-  return models.Users.create(req.json.username, req.json.password);
+  console.log(req.body);
+  return models.Users.create(req.body)
+  .then((results) => {
+    res.status(201).send(link);
+  })
+  .catch((err) => {
+    res.status(401).send();
+  });
 });
 
 //Process POST request to login at /login
 app.post('/login', (req, res, next) => {
-  return models.Users.compare()
+  //route to new models.Users method
+  return models.Users.accessUser(req.json.username)
+    .then((userData) => {
+      return models.Users.compare(req.json.password, userData.password, userData.salt);
+    })
+  //Should be given a user, see if they exist, pull their salt and hashed pw
+  //then models.Users.compare(attempted, pw, salt)
+  //then auth cookies or 401 status
+  
 });
 
 
