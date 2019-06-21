@@ -5,6 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const cookieParser = require('./middleware/cookieParser');
 
 const app = express();
 
@@ -14,8 +15,7 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-
-
+app.use(cookieParser());
 
 app.get('/', 
 (req, res) => {
@@ -79,7 +79,7 @@ app.post('/links',
 /************************************************************/
 //Process POST request to register for new account at /signup
 app.post('/signup', (req, res, next) => {
-  console.log(req.body);
+  console.log(req.cookies);
   return models.Users.create(req.body)
   .then((results) => {
     res.status(201).send(link);
