@@ -46,7 +46,7 @@ class Sessions extends Model {
   }
 
   update(options, values) {
-    console.log(`update options: ${options} \n update values: ${values}`);
+    // console.log(`update options: ${options} \n update values: ${values}`);
     return super.update.call(this, options, values);
   }
 

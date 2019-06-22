@@ -5,14 +5,14 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
-const parseCookies = require('./middleware/cookieParser');
+const cookieParser = require('./middleware/cookieParser');
 
 const app = express();
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 app.use(partials());
-app.use(parseCookies());
+app.use(cookieParser());
 app.use(Auth.createSession());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -87,17 +87,16 @@ app.post('/signup', (req, res, next) => {
     // console.log('results', results);
     console.log('current hash: ', req.session.hash);
     console.log('userId: ', results.insertId);
-    
     //update session
    return models.Sessions.update({hash: req.session.hash}, {userId: results.insertId})
   // return models.Sessions.update({}, {})
   })
   .then(() => {
-    res.status(201).send('New user created')
+    res.status(201).location('/').send('New user created')
   })
   .catch((err) => {
     console.log('Error somewhere; likely on updating sessions');
-    res.status(401).send();
+    res.status(401).location('/signup').send();
   });
 });
 
@@ -106,18 +105,24 @@ app.post('/login', (req, res, next) => {
   //route to new models.Users method
   return models.Users.accessUser(req.body.username)
     .then((userData) => {
+      //Should be given a user, see if they exist, pull their salt and hashed pw
       return models.Users.compare(req.body.password, userData.password, userData.salt);
     })
     .then((results) => {
-      res.status(201).send(results);
       // at this point results should be true/false of compare
       // depending on true/false we will need to do something later
+      if (!results) {
+        res.status(401).location('/login').send();
+      }
+      return models.Sessions.update({hash: req.session.hash}, {userId: userData.insertId})
+    })
+    .then(() => {
+      res.status(201).location('/').send(results);
     })
     .catch((err) => {
-      res.status(401).send();
+      res.status(401).location('/login').send();
     });
 
-  //Should be given a user, see if they exist, pull their salt and hashed pw
   //then models.Users.compare(attempted, pw, salt)
   //then auth cookies or 401 status
   

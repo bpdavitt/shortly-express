@@ -83,7 +83,7 @@ class Model {
    */
   update(options, values) {
     let parsedOptions = parseData(options);
-    console.log(`update options: ${parsedOptions} \n update values: ${values}`);
+    // console.log(`update options: ${parsedOptions} \n update values: ${values}`);
     let queryString = `UPDATE ${this.tablename} SET ? WHERE ${parsedOptions.string.join(' AND ')}`;
     return executeQuery(queryString, Array.prototype.concat(values, parsedOptions.values));
   }
