@@ -11,18 +11,20 @@ module.exports.createSession = function() {
       // create new session
       return models.Sessions.create()
         .then(insertionData => {
-          console.log('insertionData', insertionData);
+          // console.log('insertionData', insertionData);
           return models.Sessions.get({ id: insertionData.insertId });
         })
         .then(sessionData => {
-          console.log('sessionData', sessionData);
+          // console.log('sessionData', sessionData);
           // store in sessions database
           req.session.userId = sessionData.userId;
           req.session.hash = sessionData.hash;
           // req.session.username =
           req.session.sessionId = sessionData.id;
+          // console.log('req.session', req.session);
           // set cookie in response headers
-          res.cookie(`session`, `${sessionData.hash}`).send();
+          res.cookie(`session`, `${sessionData.hash}`)
+          return next();
         })
         .catch(err => {
           console.log(err);

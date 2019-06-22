@@ -12,11 +12,11 @@ const app = express();
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 app.use(partials());
+app.use(parseCookies());
+app.use(Auth.createSession());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(parseCookies());
-app.use(Auth.createSession());
 
 app.get('/', 
 (req, res) => {
@@ -80,13 +80,23 @@ app.post('/links',
 /************************************************************/
 //Process POST request to register for new account at /signup
 app.post('/signup', (req, res, next) => {
-  // console.log(req.cookies);
+  // console.log('test', req.body);
+  console.log(req.body);
   return models.Users.create(req.body)
   .then((results) => {
-    console.log(results);
-    res.status(201).send(link);
+    // console.log('results', results);
+    console.log('current hash: ', req.session.hash);
+    console.log('userId: ', results.insertId);
+    
+    //update session
+   return models.Sessions.update({hash: req.session.hash}, {userId: results.insertId})
+  // return models.Sessions.update({}, {})
+  })
+  .then(() => {
+    res.status(201).send('New user created')
   })
   .catch((err) => {
+    console.log('Error somewhere; likely on updating sessions');
     res.status(401).send();
   });
 });
