@@ -81,12 +81,9 @@ app.post('/links',
 //Process POST request to register for new account at /signup
 app.post('/signup', (req, res, next) => {
   // console.log('test', req.body);
-  console.log(req.body);
   return models.Users.create(req.body)
   .then((results) => {
     // console.log('results', results);
-    console.log('current hash: ', req.session.hash);
-    console.log('userId: ', results.insertId);
     //update session
    return models.Sessions.update({hash: req.session.hash}, {userId: results.insertId})
   // return models.Sessions.update({}, {})
@@ -126,6 +123,22 @@ app.post('/login', (req, res, next) => {
   //then models.Users.compare(attempted, pw, salt)
   //then auth cookies or 401 status
   
+});
+
+//Process POST request to logout at /logout
+app.get('/logout', (req, res, next) => {
+  console.log('attempting to logout');
+  console.log(req.session)
+  return models.Sessions.delete({ hash: req.session.hash})
+  .then(() => {
+    req.session = {};
+    req.cookies.shortlyid = "";
+    res.cookie('shortlyid', '')
+    res.status(200).send('You have been logged out');
+  })
+  .catch((err) => {
+    res.status(404).send('Error, you are still logged in');
+  });
 });
 
 

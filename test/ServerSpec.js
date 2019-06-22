@@ -480,7 +480,7 @@ describe('', function() {
     });
   });
 
-  describe('Sessions and cookies', function() {
+ describe('Sessions and cookies', function() {
     var requestWithSession;
     var cookieJar;
 
@@ -556,6 +556,7 @@ describe('', function() {
           if (error) { return done(error); }
 
           var cookies = cookieJar.getCookies('http://127.0.0.1:4568/');
+          console.log('cookies', cookies)
           var newCookieValue = cookies[0].value;
           expect(cookieValue).to.not.equal(newCookieValue);
 

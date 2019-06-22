@@ -50,6 +50,10 @@ class Sessions extends Model {
     return super.update.call(this, options, values);
   }
 
+  delete(options) {
+    // console.log(`update options: ${options} \n update values: ${values}`);
+    return super.delete.call(this, options);
+  }
   /**
    * Creates a new session. Within this function, a hash is randomly generated.
    * @returns {Promise<Object>} A promise that is fulfilled with the results of
